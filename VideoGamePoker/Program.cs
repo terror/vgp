@@ -24,17 +24,7 @@ namespace VideoGamePoker
             const int pair = 1;
             //
 
-            /*
-             Game Loop
-
-               Shuffle deck
-               Get bet amount
-               Reduce bankroll
-               Deal cards
-               Discard and deal new ones
-               Evaluate hand
-             */
-
+            Console.WriteLine("Welcome to Video Game Poker!\n");
             while (true)
             {
 
@@ -47,57 +37,73 @@ namespace VideoGamePoker
 
                 // Deal Cards
                 Card[] hand = new Card[cardsInHand];
-                Console.WriteLine("Here is your hand!");
+                Console.WriteLine("Here is your hand!\n");
                 for (int i = 0; i < hand.Length; i++)
                 {
                     hand[i] = deck.DealACard();
+                    Console.WriteLine(hand[i].ToString());
                 }
                 Console.WriteLine(" ");
 
-                // Discard Cards
-                hand = DiscardCards(hand);
-                Console.WriteLine("Here is your hand after discard.");
+                // Replace Cards
+                hand = ReplaceCards(hand, deck);
+                Console.WriteLine("Here is your hand after replace.\n");
                 for (int i = 0; i < hand.Length; i++)
                 {
                     Console.WriteLine(hand[i].ToString());
                 }
                 Console.WriteLine(" ");
-
-                // Deal new Cards
-                hand = DealNewCards(hand, deck);
-                Console.WriteLine("Here is your new hand!");
-                for (int i = 0; i < hand.Length; i++)
-                {
-                    Console.WriteLine(hand[i].ToString());
-                }
 
                 // Evaluate Hand / Add to Bankroll
                 switch (EvaluateHand(hand))
                 {
                     case 0:
-                        Console.WriteLine("No Hand Detected");
+                        Console.WriteLine("You Lose.\n");
                         break;
                     case 1:
+                        Console.WriteLine("Royal Flush! You win ${0}\n", royalFlush * bankRoll);
+                        bankRoll += royalFlush * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 2:
+                        Console.WriteLine("Straight Flush! You win ${0}\n", straightFlush * bankRoll);
+                        bankRoll += straightFlush * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 3:
-                        Console.WriteLine("Four of a Kind!");
-                        bankRoll += fourOfAKind;
+                        Console.WriteLine("Four of a Kind! You win ${0}\n", fourOfAKind * bankRoll);
+                        bankRoll += fourOfAKind * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 4:
+                        Console.WriteLine("Full House! You win ${0}\n", fullHouse * bankRoll);
+                        bankRoll += fullHouse * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 5:
+                        Console.WriteLine("Flush! You win ${0}\n", flush * bankRoll);
+                        bankRoll += flush * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 6:
+                        Console.WriteLine("Straight! You win ${0}\n", straight * bankRoll);
+                        bankRoll += straight * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 7:
-                        Console.WriteLine("Three of a Kind!");
-                        bankRoll += threeOfAKind;
+                        Console.WriteLine("Three of a Kind! You win ${0}\n", threeOfAKind * bankRoll);
+                        bankRoll += threeOfAKind * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 8:
+                        Console.WriteLine("Two Pair! You win ${0}\n", twoPair * bankRoll);
+                        bankRoll += royalFlush * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", twoPair);
                         break;
                     case 9:
+                        Console.WriteLine("Pair! You win ${0}\n", pair * bankRoll);
+                        bankRoll += pair * bankRoll;
+                        Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                 }
 
@@ -105,10 +111,12 @@ namespace VideoGamePoker
             }
         }
 
+        // Gets amount player would like to bet
         static int GetAmount(int bankRoll)
         {
             int amount;
             Console.WriteLine("How much money would you like to bet?");
+            Console.WriteLine("Current Bankroll: {0}", bankRoll);
             while (!int.TryParse(Console.ReadLine(), out amount) && amount < bankRoll)
             {
                 Console.WriteLine("Invalid amount, please try again!");
@@ -116,84 +124,67 @@ namespace VideoGamePoker
             return amount;
         }
 
-        static Card[] DiscardCards(Card[] hand)
+        // Allows player to replace up to 4 cards in hand with new cards from deck
+        static Card[] ReplaceCards(Card[] hand, Deck deck)
         {
-            int limit = 4;
-            int choice;
 
-            Console.WriteLine("How many cards would you like to remove?");
+            Console.WriteLine("Choose which cards to replace, Press 0 to Exit");
             for (int i = 0; i < hand.Length; i++)
             {
-                Console.WriteLine(hand[i].ToString());
-            }
-
-            while (!int.TryParse(Console.ReadLine(), out choice) && choice <= limit)
-            {
-                Console.WriteLine("Invalid Choice. Please Try Again.");
+                Console.WriteLine("[{0}] {1}", i + 1, hand[i].ToString());
             }
 
 
             var temp = new List<Card>(hand);
+            int count = 0;
             int index;
 
-            for (int i = 0; i < choice; i++)
+            while (true)
             {
-                Console.WriteLine("Enter the index of the card you would like to remove.");
                 while (!int.TryParse(Console.ReadLine(), out index) && index >= 5)
                 {
                     Console.WriteLine("Invalid Index. Please Try Again!");
                 }
-                temp.RemoveAt(index);
-            }
-            return temp.ToArray();
-        }
 
-        static Card[] DealNewCards(Card[] hand, Deck deck)
-        {
-            int handLength = 5;
-
-            var temp = new List<Card>(hand);
-            if (hand.Length != handLength)
-            {
-                for (int i = 0; i < Math.Abs(hand.Length - handLength); i++)
+                if (index == 0 || count == 4)
                 {
-                    temp.Add(deck.DealACard());
+                    break;
                 }
+                temp.RemoveAt(index - 1);
+                temp.Insert(index - 1, deck.DealACard());
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Card Successfully Replaced...");
+                Console.ResetColor();
+                count++;
             }
+
+
             return temp.ToArray();
         }
 
+        // Evaluates player hand and detects for a winning hand
         static int EvaluateHand(Card[] hand)
         {
-            /*
-             1 - Royal Flush
-             2 - Straight Flush
-             3 - Four of a Kind
-             4 - Full House
-             5 - Flush
-             6 - Straight
-             7 - Three of a Kind
-             8 - Two Pair
-             9 - Pair
-             */
 
-            // Royal Flush
-            var royalFlush = new List<Card.Suit>();
+            // Suits and Values for Evaluation
+            var suits = new List<Card.Suit>();
+            var values = new List<Card.FaceValue>();
+
             for (int i = 0; i < hand.Length; i++)
             {
-                royalFlush.Add(hand[i].GetSuit());
+                suits.Add(hand[i].GetSuit());
+                values.Add(hand[i].GetFaceValue());
             }
+
+            // Royal Flush
+
 
 
             // Straight Flush
 
             // Four of a Kind - Remove duplicates and check for Length
-            var fourOfAKind = new List<Card.FaceValue>();
-            for (int i = 0; i < hand.Length; i++)
-            {
-                fourOfAKind.Add(hand[i].GetFaceValue());
-            }
-            if (fourOfAKind.Distinct().ToArray().Length == 1)
+
+            if (values.Distinct().ToArray().Length == 2)
             {
                 return 3;
             }
@@ -205,12 +196,8 @@ namespace VideoGamePoker
             // Straight
 
             // Three of a Kind - Remove duplicates and check for Length
-            var threeOfAKind = new List<Card.FaceValue>();
-            for (int i = 0; i < hand.Length; i++)
-            {
-                threeOfAKind.Add(hand[i].GetFaceValue());
-            }
-            if (threeOfAKind.Distinct().ToArray().Length == 2)
+
+            if (values.Distinct().ToArray().Length == 3)
             {
                 return 7;
             }
@@ -218,6 +205,10 @@ namespace VideoGamePoker
             // Two Pair
 
             // Pair
+            if (values.Distinct().ToArray().Length == 4)
+            {
+                return 9;
+            }
 
 
 
