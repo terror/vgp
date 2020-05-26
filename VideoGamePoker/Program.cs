@@ -61,48 +61,48 @@ namespace VideoGamePoker
                         Console.WriteLine("You Lose.\n");
                         break;
                     case 1:
-                        Console.WriteLine("Royal Flush! You win ${0}\n", royalFlush * bankRoll);
-                        bankRoll += royalFlush * bankRoll;
+                        Console.WriteLine("Royal Flush! You win ${0}\n", royalFlush * amount);
+                        bankRoll += royalFlush * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 2:
-                        Console.WriteLine("Straight Flush! You win ${0}\n", straightFlush * bankRoll);
-                        bankRoll += straightFlush * bankRoll;
+                        Console.WriteLine("Straight Flush! You win ${0}\n", straightFlush * amount);
+                        bankRoll += straightFlush * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 3:
-                        Console.WriteLine("Four of a Kind! You win ${0}\n", fourOfAKind * bankRoll);
-                        bankRoll += fourOfAKind * bankRoll;
+                        Console.WriteLine("Four of a Kind! You win ${0}\n", fourOfAKind * amount);
+                        bankRoll += fourOfAKind * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 4:
-                        Console.WriteLine("Full House! You win ${0}\n", fullHouse * bankRoll);
-                        bankRoll += fullHouse * bankRoll;
+                        Console.WriteLine("Full House! You win ${0}\n", fullHouse * amount);
+                        bankRoll += fullHouse * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 5:
-                        Console.WriteLine("Flush! You win ${0}\n", flush * bankRoll);
-                        bankRoll += flush * bankRoll;
+                        Console.WriteLine("Flush! You win ${0}\n", flush * amount);
+                        bankRoll += flush * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 6:
-                        Console.WriteLine("Straight! You win ${0}\n", straight * bankRoll);
-                        bankRoll += straight * bankRoll;
+                        Console.WriteLine("Straight! You win ${0}\n", straight * amount);
+                        bankRoll += straight * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 7:
-                        Console.WriteLine("Three of a Kind! You win ${0}\n", threeOfAKind * bankRoll);
-                        bankRoll += threeOfAKind * bankRoll;
+                        Console.WriteLine("Three of a Kind! You win ${0}\n", threeOfAKind * amount);
+                        bankRoll += threeOfAKind * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                     case 8:
-                        Console.WriteLine("Two Pair! You win ${0}\n", twoPair * bankRoll);
-                        bankRoll += royalFlush * bankRoll;
+                        Console.WriteLine("Two Pair! You win ${0}\n", twoPair * amount);
+                        bankRoll += royalFlush * amount;
                         Console.WriteLine("Bankroll: {0}", twoPair);
                         break;
                     case 9:
-                        Console.WriteLine("Pair! You win ${0}\n", pair * bankRoll);
-                        bankRoll += pair * bankRoll;
+                        Console.WriteLine("Pair! You win ${0}\n", pair * amount);
+                        bankRoll += pair * amount;
                         Console.WriteLine("Bankroll: {0}", bankRoll);
                         break;
                 }
@@ -178,8 +178,6 @@ namespace VideoGamePoker
 
             // Royal Flush
 
-
-
             // Straight Flush
 
             // Four of a Kind - Remove duplicates and check for Length
@@ -209,8 +207,6 @@ namespace VideoGamePoker
             {
                 return 9;
             }
-
-
 
             return 0;
         }
