@@ -4,131 +4,147 @@ using System.Linq;
 
 namespace VideoGamePoker
 {
+    /*
+     Created by Liam Scalzulli
+     Tester: Nicholas Nittolo
+     */
     class Program
     {
+        // Payouts
+        const int royalFlush = 250;
+        const int straightFlush = 50;
+        const int fourOfAKind = 25;
+        const int fullHouse = 9;
+        const int flush = 6;
+        const int straight = 4;
+        const int threeOfAKind = 3;
+        const int twoPair = 2;
+        const int pair = 1;
+        //
+
         static void Main(string[] args)
         {
             const int cardsInHand = 5;
             int bankRoll = 1000;
             Deck deck = new Deck();
+            int choice;
 
-            // Payouts
-            const int royalFlush = 250;
-            const int straightFlush = 50;
-            const int fourOfAKind = 25;
-            const int fullHouse = 9;
-            const int flush = 6;
-            const int straight = 4;
-            const int threeOfAKind = 3;
-            const int twoPair = 2;
-            const int pair = 1;
-            //
+
 
             string welcome = "Welcome to Video Game Poker!\n";
-            Console.SetCursorPosition((Console.WindowWidth - welcome.Length) / 2, Console.CursorTop);
             Console.WriteLine(welcome);
-            while (true)
+
+            do
             {
+                Console.WriteLine("1 - Play\n" +
+                    "2 - Test\n" +
+                    "3 - Quit\n");
+                int.TryParse(Console.ReadLine(), out choice);
+                switch (choice)
+                {
+                    case 1:
+                        while (true)
+                        {
 
-                // Shuffle Deck
-                deck.Shuffle();
+                            // Shuffle Deck
+                            deck.Shuffle();
 
-                // Get Player Bet Amount and Remove From Bankroll
-                int amount = GetAmount(bankRoll);
-                bankRoll -= amount;
+                            // Get Player Bet Amount and Remove From Bankroll
+                            int amount = GetAmount(bankRoll);
+                            bankRoll -= amount;
 
-                // Deal Cards
-                Card[] hand = new Card[cardsInHand];
-                Console.WriteLine("Here is your hand!\n");
-                for (int i = 0; i < hand.Length; i++)
-                {
-                    hand[i] = deck.DealACard();
-                    Console.WriteLine(hand[i].ToString());
-                }
-                Console.WriteLine(" ");
+                            // Deal Cards
+                            Card[] hand = new Card[cardsInHand];
+                            Console.WriteLine("Here is your hand!\n");
+                            for (int i = 0; i < hand.Length; i++)
+                            {
+                                hand[i] = deck.DealACard();
+                                Console.WriteLine(hand[i].ToString());
+                            }
+                            Console.WriteLine(" ");
 
-                // Replace Cards
-                hand = ReplaceCards(hand, deck);
-                Console.WriteLine("Here is your hand after replace.\n");
-                for (int i = 0; i < hand.Length; i++)
-                {
-                    Console.WriteLine(hand[i].ToString());
-                }
-                Console.WriteLine(" ");
+                            // Replace Cards
+                            hand = ReplaceCards(hand, deck);
+                            Console.WriteLine("Here is your hand after replace.\n");
+                            for (int i = 0; i < hand.Length; i++)
+                            {
+                                Console.WriteLine(hand[i].ToString());
+                            }
+                            Console.WriteLine(" ");
 
-                // Evaluate Hand / Add to Bankroll
+                            // Evaluate Hand / Add to Bankroll
+                            DetectHand(hand, bankRoll, amount);
+                        }
+                    case 2:
+                        Console.WriteLine("\n1 - Test Royal Flush\n" +
+                            "2 - Test Straight Flush\n" +
+                            "3 - Test Four of a Kind\n" +
+                            "4 - Test Full House\n" +
+                            "5 - Test Flush\n" +
+                            "6 - Test Straight\n" +
+                            "7 - Test Three of a Kind\n" +
+                            "8 - Test Two Pair\n" +
+                            "9 - Test Pair\n");
+                        int.TryParse(Console.ReadLine(), out int testChoice);
+                        int testBankroll = 1000;
+                        int testAmount = GetAmount(testBankroll);
 
-                var suits = new List<Card.Suit>();
-                var values = new List<Card.FaceValue>();
+                        switch (testChoice)
+                        {
+                            case 1:
+                                // Test A, K, Q, J, T Same suit
+                                Card[] testRoyalFlush = { new Card(Card.Suit.Spades, Card.FaceValue.Ace), new Card(Card.Suit.Spades, Card.FaceValue.King), new Card(Card.Suit.Spades, Card.FaceValue.Queen), new Card(Card.Suit.Spades, Card.FaceValue.Jack), new Card(Card.Suit.Spades, Card.FaceValue.Ten) };
+                                DetectHand(testRoyalFlush, testBankroll, testAmount);
+                                break;
+                            case 2:
+                                // Test 8, 7, 6, 5, 4
+                                Card[] testStraightFlush = { new Card(Card.Suit.Diamonds, Card.FaceValue.Eight), new Card(Card.Suit.Diamonds, Card.FaceValue.Seven), new Card(Card.Suit.Diamonds, Card.FaceValue.Six), new Card(Card.Suit.Diamonds, Card.FaceValue.Five), new Card(Card.Suit.Diamonds, Card.FaceValue.Four) };
+                                DetectHand(testStraightFlush, testBankroll, testAmount);
+                                break;
+                            case 3:
+                                // Test Q, Q, Q, Q, 10
+                                Card[] testFour = { new Card(Card.Suit.Spades, Card.FaceValue.Queen), new Card(Card.Suit.Hearts, Card.FaceValue.Queen), new Card(Card.Suit.Diamonds, Card.FaceValue.Queen), new Card(Card.Suit.Spades, Card.FaceValue.Queen), new Card(Card.Suit.Diamonds, Card.FaceValue.Ten) };
+                                DetectHand(testFour, testBankroll, testAmount);
+                                break;
+                            case 4:
+                                // Test 3, 3, 3, K, K
+                                Card[] testFullHouse = { new Card(Card.Suit.Spades, Card.FaceValue.Three), new Card(Card.Suit.Hearts, Card.FaceValue.Three), new Card(Card.Suit.Diamonds, Card.FaceValue.Three), new Card(Card.Suit.Spades, Card.FaceValue.King), new Card(Card.Suit.Diamonds, Card.FaceValue.King) };
+                                DetectHand(testFullHouse, testBankroll, testAmount);
+                                break;
+                            case 5:
+                                // Test all cards of the same suit
+                                Card[] testFlush = { new Card(Card.Suit.Spades, Card.FaceValue.Three), new Card(Card.Suit.Spades, Card.FaceValue.Two), new Card(Card.Suit.Spades, Card.FaceValue.Four), new Card(Card.Suit.Spades, Card.FaceValue.King), new Card(Card.Suit.Spades, Card.FaceValue.King) };
+                                DetectHand(testFlush, testBankroll, testAmount);
+                                break;
+                            case 6:
+                                // Test K, Q, J, 10, 9
+                                Card[] testStraight = { new Card(Card.Suit.Spades, Card.FaceValue.King), new Card(Card.Suit.Hearts, Card.FaceValue.Queen), new Card(Card.Suit.Diamonds, Card.FaceValue.Jack), new Card(Card.Suit.Spades, Card.FaceValue.Ten), new Card(Card.Suit.Diamonds, Card.FaceValue.Nine) };
+                                DetectHand(testStraight, testBankroll, testAmount);
+                                break;
+                            case 7:
+                                // Test 8, 8, 8, J, 5
+                                Card[] testThree = { new Card(Card.Suit.Spades, Card.FaceValue.Eight), new Card(Card.Suit.Hearts, Card.FaceValue.Eight), new Card(Card.Suit.Diamonds, Card.FaceValue.Eight), new Card(Card.Suit.Spades, Card.FaceValue.Jack), new Card(Card.Suit.Diamonds, Card.FaceValue.Five) };
+                                DetectHand(testThree, testBankroll, testAmount);
+                                break;
+                            case 8:
+                                // Test Q, Q, 7, 7, A
+                                Card[] testTwoPair = { new Card(Card.Suit.Spades, Card.FaceValue.Queen), new Card(Card.Suit.Hearts, Card.FaceValue.Queen), new Card(Card.Suit.Diamonds, Card.FaceValue.Seven), new Card(Card.Suit.Spades, Card.FaceValue.Seven), new Card(Card.Suit.Diamonds, Card.FaceValue.Ace) };
+                                DetectHand(testTwoPair, testBankroll, testAmount);
+                                break;
+                            case 9:
+                                // Test J, J, 10, 6, 2
+                                Card[] testPair = { new Card(Card.Suit.Spades, Card.FaceValue.Jack), new Card(Card.Suit.Hearts, Card.FaceValue.Jack), new Card(Card.Suit.Diamonds, Card.FaceValue.Seven), new Card(Card.Suit.Spades, Card.FaceValue.Three), new Card(Card.Suit.Diamonds, Card.FaceValue.Ace) };
+                                DetectHand(testPair, testBankroll, testAmount);
+                                break;
+                        }
 
-                for (int i = 0; i < hand.Length; i++)
-                {
-                    suits.Add(hand[i].GetSuit());
-                    values.Add(hand[i].GetFaceValue());
+                        break;
+                    case 3:
+                        break;
                 }
+            } while (choice <= 2 && choice > 0);
+            // Game Loop
 
-
-                if (RoyalFlush(hand, values, suits))
-                {
-                    Console.WriteLine("Royal Flush! You win ${0}", royalFlush * amount);
-                    bankRoll += royalFlush * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (StraightFlush(hand, values, suits))
-                {
-                    Console.WriteLine("Straight Flush! You win ${0}", straightFlush * amount);
-                    bankRoll += straightFlush * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (FourOfAKind(hand, values, suits))
-                {
-                    Console.WriteLine("Four of a Kind! You win ${0}", fourOfAKind * amount);
-                    bankRoll += fourOfAKind * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (FullHouse(hand, values, suits))
-                {
-                    Console.WriteLine("Full House! You win ${0}", fullHouse * amount);
-                    bankRoll += fullHouse * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (Flush(hand, values, suits))
-                {
-                    Console.WriteLine("Flush! You win ${0}", flush * amount);
-                    bankRoll += flush * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (Straight(hand, values, suits))
-                {
-                    Console.WriteLine("Straight! You win ${0}", straight * amount);
-                    bankRoll += straight * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (ThreeOfAKind(hand, values, suits))
-                {
-                    Console.WriteLine("Three of a Kind! You win ${0}", threeOfAKind * amount);
-                    bankRoll += threeOfAKind * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else if (TwoPair(hand, values, suits))
-                {
-                    Console.WriteLine("Two Pair! You win ${0}", twoPair * amount);
-                    bankRoll += twoPair * amount;
-                    Console.WriteLine("Bankroll: {0}\n", twoPair);
-                }
-                else if (Pair(hand, values, suits))
-                {
-                    Console.WriteLine("Pair! You win ${0}", pair * amount);
-                    bankRoll += pair * amount;
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-                else
-                {
-                    Console.WriteLine("You Lose!");
-                    Console.WriteLine("Bankroll: {0}\n", bankRoll);
-                }
-
-            }
         }
 
         // Gets the amount the player would like to bet
@@ -138,7 +154,8 @@ namespace VideoGamePoker
             Console.WriteLine("How much money would you like to bet?");
             Console.WriteLine("Current Bankroll: {0}\n", bankRoll);
             Console.Write("Amount: ");
-            while (!int.TryParse(Console.ReadLine(), out amount) && amount < bankRoll)
+
+            while (!int.TryParse(Console.ReadLine(), out amount) || amount > bankRoll)
             {
                 Console.WriteLine("Invalid amount, please try again!");
             }
@@ -189,62 +206,249 @@ namespace VideoGamePoker
 
         // Player Hand Evaluation Methods
 
-        static bool RoyalFlush(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool RoyalFlush(Card[] hand)
         {
-            if (values.Distinct().ToArray().Length == 1)
+            SortValues(hand);
+            // Highest straight flush
+            if (Straight(hand) && Flush(hand) && hand[4].GetFaceValue() == Card.FaceValue.Ace)
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        static bool StraightFlush(Card[] hand)
+        {
+            if (Straight(hand) && Flush(hand))
             {
                 return true;
             }
             return false;
         }
 
-        static bool StraightFlush(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool FourOfAKind(Card[] hand)
         {
+            // 4 cards == in value, sort and check
+            SortValues(hand);
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[1].GetFaceValue() == hand[2].GetFaceValue() && hand[2].GetFaceValue() == hand[3].GetFaceValue())
+            {
+                return true;
+            }
+            if (hand[1].GetFaceValue() == hand[2].GetFaceValue() && hand[2].GetFaceValue() == hand[3].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
+            {
+                return true;
+            }
             return false;
+
         }
 
-        static bool FourOfAKind(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool FullHouse(Card[] hand)
+
         {
-            if (values.Distinct().ToArray().Length == 2)
+            SortValues(hand);
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[1].GetFaceValue() == hand[2].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
+            {
+                return true;
+            }
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[2].GetFaceValue() == hand[3].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
+            {
+                return true;
+            }
+            return false;
+
+        }
+
+        static bool Flush(Card[] hand)
+        {
+            SortSuits(hand);
+            // Check for same suit cards 0 -> 4 (All 5)
+            if (hand[0].GetSuit() == hand[4].GetSuit())
             {
                 return true;
             }
             return false;
         }
 
-        static bool FullHouse(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool Straight(Card[] hand)
         {
-            return false;
-        }
+            SortValues(hand);
+            var temp = hand[0].GetFaceValue() + 1;
 
-        static bool Flush(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
-        {
-            return false;
-        }
+            // Check for sequence
+            for (int i = 1; i < hand.Length; i++)
+            {
+                if (hand[i].GetFaceValue() != temp)
+                {
+                    return false;
+                }
+                temp += 1;
+            }
 
-        static bool Straight(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
-        {
-            return false;
+            return true;
         }
-        static bool ThreeOfAKind(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool ThreeOfAKind(Card[] hand)
         {
-            if (values.Distinct().ToArray().Length == 3)
+            // Possible cases: cccab, acccb, abccc
+
+            SortValues(hand);
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[1].GetFaceValue() == hand[2].GetFaceValue())
+            {
+                return true;
+            }
+            if (hand[1].GetFaceValue() == hand[2].GetFaceValue() && hand[2].GetFaceValue() == hand[3].GetFaceValue())
+            {
+                return true;
+            }
+            if (hand[2].GetFaceValue() == hand[3].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
             {
                 return true;
             }
             return false;
         }
-        static bool TwoPair(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool TwoPair(Card[] hand)
         {
+            // Possible cases: aabbc, aacbb, caabb
+
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[2].GetFaceValue() == hand[3].GetFaceValue())
+            {
+                return true;
+            }
+
+            if (hand[0].GetFaceValue() == hand[1].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
+            {
+                return true;
+            }
+
+            if (hand[1].GetFaceValue() == hand[2].GetFaceValue() && hand[3].GetFaceValue() == hand[4].GetFaceValue())
+            {
+                return true;
+            }
+
             return false;
         }
-        static bool Pair(Card[] hand, List<Card.FaceValue> values, List<Card.Suit> suits)
+        static bool Pair(List<Card.FaceValue> values)
         {
+            // If only one duplicate in values, a pair exists
             if (values.Distinct().ToArray().Length == 4)
             {
                 return true;
             }
             return false;
+        }
+
+        // Selection sort hand by suit
+        public static void SortSuits(Card[] hand)
+        {
+            for (int i = 0; i < hand.Length; i++)
+            {
+                int m = i;
+                for (int j = i + 1; j < hand.Length; j++)
+                {
+                    if (hand[j].GetSuit() < hand[m].GetSuit())
+                    {
+                        m = j;
+                    }
+                }
+                // Swap cards
+                Card temp = hand[i];
+                hand[i] = hand[m];
+                hand[m] = temp;
+            }
+
+
+        }
+
+        // Selection sort hand by values
+        public static void SortValues(Card[] hand)
+        {
+            for (int i = 0; i < hand.Length; i++)
+            {
+                int m = i;
+                for (int j = i + 1; j < hand.Length; j++)
+                {
+                    if (hand[j].GetFaceValue() < hand[m].GetFaceValue())
+                    {
+                        m = j;
+                    }
+                }
+                // Swap cards
+                Card temp = hand[i];
+                hand[i] = hand[m];
+                hand[m] = temp;
+            }
+        }
+
+        // Detect hand method for playing and testing
+        static void DetectHand(Card[] hand, int bankRoll, int amount)
+        {
+            var values = new List<Card.FaceValue>();
+
+            for (int i = 0; i < hand.Length; i++)
+            {
+                values.Add(hand[i].GetFaceValue());
+
+            }
+
+            if (RoyalFlush(hand))
+            {
+                Console.WriteLine("Royal Flush! You win ${0}", royalFlush * amount);
+                bankRoll += royalFlush * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (StraightFlush(hand))
+            {
+                Console.WriteLine("Straight Flush! You win ${0}", straightFlush * amount);
+                bankRoll += straightFlush * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (FourOfAKind(hand))
+            {
+                Console.WriteLine("Four of a Kind! You win ${0}", fourOfAKind * amount);
+                bankRoll += fourOfAKind * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (FullHouse(hand))
+            {
+                Console.WriteLine("Full House! You win ${0}", fullHouse * amount);
+                bankRoll += fullHouse * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (Flush(hand))
+            {
+                Console.WriteLine("Flush! You win ${0}", flush * amount);
+                bankRoll += flush * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (Straight(hand))
+            {
+                Console.WriteLine("Straight! You win ${0}", straight * amount);
+                bankRoll += straight * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (ThreeOfAKind(hand))
+            {
+                Console.WriteLine("Three of a Kind! You win ${0}", threeOfAKind * amount);
+                bankRoll += threeOfAKind * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else if (TwoPair(hand))
+            {
+                Console.WriteLine("Two Pair! You win ${0}", twoPair * amount);
+                bankRoll += twoPair * amount;
+                Console.WriteLine("Bankroll: {0}\n", twoPair);
+            }
+            else if (Pair(values))
+            {
+                Console.WriteLine("Pair! You win ${0}", pair * amount);
+                bankRoll += pair * amount;
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
+            else
+            {
+                Console.WriteLine("You Lose!");
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+            }
         }
     }
 }
