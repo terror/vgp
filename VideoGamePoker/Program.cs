@@ -4,10 +4,17 @@ using System.Linq;
 
 namespace VideoGamePoker
 {
+    /// <summary>
+    ///  Video Poker Game in C# Utilizing OOP, Functional Decomposition and Algorithms
+    /// </summary>
+
     /*
      Created by Liam Scalzulli
+     May 31, 2020
+
      Tester: Nicholas Nittolo
      */
+
     class Program
     {
         // Payouts
@@ -26,6 +33,7 @@ namespace VideoGamePoker
         {
             const int cardsInHand = 5;
             int bankRoll = 1000;
+            int amount;
             Deck deck = new Deck();
             int choice;
 
@@ -50,8 +58,9 @@ namespace VideoGamePoker
                             deck.Shuffle();
 
                             // Get Player Bet Amount and Remove From Bankroll
-                            int amount = GetAmount(bankRoll);
-                            bankRoll -= amount;
+                            amount = GetAmount(bankRoll);
+                            int temp = bankRoll;
+
 
                             // Deal Cards
                             Card[] hand = new Card[cardsInHand];
@@ -72,9 +81,28 @@ namespace VideoGamePoker
                             }
                             Console.WriteLine(" ");
 
-                            // Evaluate Hand / Add to Bankroll
-                            DetectHand(hand, bankRoll, amount);
+                            // Evaluate Hand / Add or Remove from Bankroll
+                            bankRoll = DetectHand(hand, bankRoll, amount);
+
+                            if (bankRoll == temp)
+                            {
+                                bankRoll -= amount;
+                            }
+
+                            if (bankRoll <= 0)
+                            {
+                                Console.WriteLine("You're all out of money! Thanks for playing!\n");
+                                break;
+                            }
+
+                            Console.WriteLine("\nDo you wish to play again? N to quit, any other key to continue.");
+                            if (Console.ReadLine() == "N")
+                            {
+                                break;
+                            }
+
                         }
+                        break;
                     case 2:
                         Console.WriteLine("\n1 - Test Royal Flush\n" +
                             "2 - Test Straight Flush\n" +
@@ -151,7 +179,7 @@ namespace VideoGamePoker
         static int GetAmount(int bankRoll)
         {
             int amount;
-            Console.WriteLine("How much money would you like to bet?");
+            Console.WriteLine("\nHow much money would you like to bet?");
             Console.WriteLine("Current Bankroll: {0}\n", bankRoll);
             Console.Write("Amount: ");
 
@@ -380,7 +408,7 @@ namespace VideoGamePoker
         }
 
         // Detect hand method for playing and testing
-        static void DetectHand(Card[] hand, int bankRoll, int amount)
+        static int DetectHand(Card[] hand, int bankRoll, int amount)
         {
             var values = new List<Card.FaceValue>();
 
@@ -436,7 +464,7 @@ namespace VideoGamePoker
             {
                 Console.WriteLine("Two Pair! You win ${0}", twoPair * amount);
                 bankRoll += twoPair * amount;
-                Console.WriteLine("Bankroll: {0}\n", twoPair);
+                Console.WriteLine("Bankroll: {0}\n", bankRoll);
             }
             else if (Pair(values))
             {
@@ -447,8 +475,9 @@ namespace VideoGamePoker
             else
             {
                 Console.WriteLine("You Lose!");
-                Console.WriteLine("Bankroll: {0}\n", bankRoll);
+                Console.WriteLine("Bankroll: {0}\n", bankRoll - amount);
             }
+            return bankRoll;
         }
     }
 }
